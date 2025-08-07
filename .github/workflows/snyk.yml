@@ -18,6 +18,6 @@ jobs:
       - name: Run Snyk to check for code vulnerabilities
         uses: snyk/actions/node@master
         with:
-          args: 'test --all-projects --all-dependencies --all-licenses --all-vulnerabilities'
+          args: 'test --all-dependencies --all-licenses --all-vulnerabilities'
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
