@@ -1,4 +1,4 @@
-name: Snyk Security Scan
+name: Snyk Security SCA Scan 
 permissions:
   contents: read
   pull-requests: write
@@ -12,12 +12,13 @@ on:
 jobs:
   security:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
 
-      - name: Run Snyk to check for code vulnerabilities
+      - name: Run Snyk to check for code vulnerabilities in dependencies
         uses: snyk/actions/node@master
         with:
-          args: 'test --all-dependencies --all-licenses --all-vulnerabilities'
+          args: 'test --all-dependencies'
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
