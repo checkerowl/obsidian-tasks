@@ -1,0 +1,24 @@
+name: Snyk Licenses Scan
+permissions:
+  contents: read
+  pull-requests: write
+  
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@main
+
+      - name: Run Snyk to check for licenses
+        uses: snyk/actions/node@master
+        with:
+          args: 'test --all-licenses'
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
