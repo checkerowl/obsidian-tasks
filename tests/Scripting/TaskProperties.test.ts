@@ -14,11 +14,20 @@ import { TasksFile } from '../../src/Scripting/TasksFile';
 import type { Task } from '../../src/Task/Task';
 import { readTasksFromSimulatedFile } from '../Obsidian/SimulatedFile';
 import docs_sample_for_task_properties_reference from '../Obsidian/__test_data__/docs_sample_for_task_properties_reference.json';
+import links_everywhere from '../Obsidian/__test_data__/links_everywhere.json';
+import { LinkResolver } from '../../src/Task/LinkResolver';
+import { getFirstLinkpathDest } from '../__mocks__/obsidian';
 import { addBackticks, determineExpressionType, formatToRepresentType } from './ScriptingTestHelpers';
 
 window.moment = moment;
 
 // TODO Show a task in a callout, or an ordered list
+
+beforeEach(() => {});
+
+afterEach(() => {
+    LinkResolver.getInstance().resetGetFirstLinkpathDestFn();
+});
 
 describe('task', () => {
     function verifyFieldDataForReferenceDocs(fields: string[]) {
@@ -147,6 +156,19 @@ describe('task', () => {
         ]);
     });
 
+    it('links', () => {
+        // This is getting annoying, having to do this repeatedly.
+        LinkResolver.getInstance().setGetFirstLinkpathDestFn(getFirstLinkpathDest);
+
+        const tasks = readTasksFromSimulatedFile(links_everywhere);
+        verifyFieldDataFromTasksForReferenceDocs(tasks, [
+            'task.outlinks',
+            'task.file.outlinksInProperties',
+            'task.file.outlinksInBody',
+            'task.file.outlinks',
+        ]);
+    });
+
     it('frontmatter properties', () => {
         const tasks = readTasksFromSimulatedFile(docs_sample_for_task_properties_reference as any);
         // Show just the first task:
@@ -163,6 +185,14 @@ describe('task', () => {
             "task.file.property('sample_link_property')",
             "task.file.property('sample_link_list_property')",
             "task.file.property('tags')",
+
+            "task.file.property('nested_data').surname",
+            "task.file.property('nested_data').firstname",
+            "task.file.property('nested_data')['middle name']",
+
+            "task.file.property('object_serialization').nested1",
+            "task.file.property('object_serialization').nested2",
+
             // 'task.file.tags', // TODO Replace
             // 'task.file.tags()', // TODO Implement
             // "task.file.tags('body')", // TODO Implement
